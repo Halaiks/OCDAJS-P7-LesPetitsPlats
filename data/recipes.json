@@ -25,7 +25,8 @@
                 "unit" : "grammes"
             },
             {
-                "ingredient": "Glaçons"
+                "ingredient": "Glaçons",
+                "quantity": 2
             }
         ],
         "time": 10,
@@ -621,6 +622,11 @@
             },
             {
                 "ingredient": "Menthe"
+            },
+            {
+                "ingredient" : "INGTEST",
+                "quantity" : 400,
+                "unit" : "ml"
             }
         ],
         "time": 15,
