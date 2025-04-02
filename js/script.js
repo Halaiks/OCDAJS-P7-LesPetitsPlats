@@ -1,43 +1,60 @@
-// Sélection de l'élément où afficher les recettes
 const recipesContainer = document.getElementById("recipes-container");
 
-// Charger les données depuis le fichier JSON
 fetch("data/recipes.json")
   .then((response) => response.json())
   .then((recipes) => {
     recipes.forEach((recipe) => {
-      // Création de l'élément de la recette
       const recipeCard = document.createElement("div");
-      recipeCard.classList.add("recipe-card", "p-4", "bg-white", "shadow-lg", "rounded-lg");
+      recipeCard.className = "w-full max-w-sm bg-white rounded-[21px] shadow-md overflow-hidden relative";
 
-      // Image de la recette
       const recipeImage = document.createElement("img");
       recipeImage.src = `assets/images/${recipe.image}`;
       recipeImage.alt = recipe.name;
-      recipeImage.classList.add("w-full", "h-40", "object-cover", "rounded-t-lg");
-      console.log(recipeImage.src)
+      recipeImage.className = "w-full h-[250px] object-cover rounded-t-lg";
 
-      // Nom de la recette
+      const recipeTime = document.createElement("div");
+      recipeTime.textContent = `${recipe.time} min`;
+      recipeTime.className = "absolute top-[22px] right-[22px] bg-[#FFD15B] text-[#1B1B1B] font-[Manrope] font-normal text-[12px] leading-none text-center pt-[5px] pr-[15px] pb-[5px] pl-[15px] rounded-[14px]";
+
+      const recipeContent = document.createElement("div");
+      recipeContent.className = "px-[25px] py-[32px]";
+
       const recipeTitle = document.createElement("h3");
       recipeTitle.textContent = recipe.name;
-      recipeTitle.classList.add("text-lg", "font-bold", "mt-2");
+      recipeTitle.className = "font-[Anton] text-[18px] mb-[29px]";
 
-      // Liste des ingrédients
+      const recipeLabel = document.createElement("p");
+      recipeLabel.textContent = "Recette";
+      recipeLabel.className = "font-[Manrope] uppercase font-bold text-[12px] mt-[29px] mb-[15px]";
+
+      const recipeDescription = document.createElement("p");
+      recipeDescription.textContent = recipe.description;
+      recipeDescription.className = "font-[Manrope] text-[14px] line-clamp-4 overflow-hidden mt-[15px]";
+
+      const ingredientsLabel = document.createElement("p");
+      ingredientsLabel.textContent = "Ingrédients";
+      ingredientsLabel.className = "font-[Manrope] uppercase font-bold text-[12px] mt-[32px] mb-[15px]";
+
       const ingredientsList = document.createElement("ul");
-      ingredientsList.classList.add("text-sm", "mt-2");
+      ingredientsList.className = "grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-[15px]";
 
       recipe.ingredients.forEach((ingredient) => {
-        const ingredientItem = document.createElement("li");
-        ingredientItem.textContent = `${ingredient.ingredient} - ${ingredient.quantity || ""} ${ingredient.unit || ""}`;
-        ingredientsList.appendChild(ingredientItem);
+        const li = document.createElement("li");
+        li.className = "flex flex-col";
+
+        const name = document.createElement("span");
+        name.textContent = ingredient.ingredient;
+
+        const quantity = document.createElement("span");
+        quantity.textContent = `${ingredient.quantity || ""} ${ingredient.unit || ""}`;
+        quantity.className = "text-gray-600 text-sm";
+
+        li.append(name, quantity);
+        ingredientsList.appendChild(li);
       });
 
-      // Ajouter les éléments à la carte de la recette
-      recipeCard.appendChild(recipeImage);
-      recipeCard.appendChild(recipeTitle);
-      recipeCard.appendChild(ingredientsList);
-
-      // Ajouter la carte au container
+      recipeContent.append(recipeTitle, recipeLabel, recipeDescription, ingredientsLabel, ingredientsList);
+      recipeCard.append(recipeImage, recipeTime, recipeContent);
       recipesContainer.appendChild(recipeCard);
     });
   })
