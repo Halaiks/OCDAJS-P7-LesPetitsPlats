@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <title>Document</title>
 </head>
@@ -16,7 +17,20 @@
         <span>du quotidien, simples et délicieuses</span>
       </h1>
     </div>
-    <input class="bg-white w-[60%]" type="text" placeholder="Rechercher une recette, un ingrédient, ...">
+    <div class="mt-[30px] w-full max-w-[850px] mx-auto flex items-center bg-white rounded-[11px] shadow-lg px-[10px] py-[10px]">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Rechercher une recette, un ingrédient, ..."
+        class="w-full px-[25px] font-[Manrope] font-normal text-[16px] text-[#7A7A7A] placeholder-[#7A7A7A] focus:outline-none"
+      >
+      <img src="assets/utils/icons/close.svg" alt="Effacer" id="clear-search"
+        class="w-[13px] h-[13px] ml-[24px] cursor-pointer hidden">
+      <button class="group bg-[#1B1B1B] hover:bg-[#FFD15B] p-[12px] ml-[10px] flex items-center justify-center rounded-[10px]">
+        <img src="assets/utils/icons/glass.svg" alt="Rechercher"
+          class="w-[27px] h-[28px] filter brightness-0 invert transition duration-200 group-hover:invert-0 group-hover:brightness-0">
+      </button>
+    </div>
   </header>
   
   <main class="max-w-screen-xl mx-auto py-[55px] px-[32px] md:px-[40px]">
