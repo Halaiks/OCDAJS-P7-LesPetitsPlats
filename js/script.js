@@ -1,3 +1,15 @@
+let selectedIngredients = [];
+let selectedAppliances = [];
+let selectedUstensils = [];
+
+let availableIngredients = [];
+let availableAppliances = [];
+let availableUstensils = [];
+
+const filterContainer = document.createElement("div");
+filterContainer.className = "flex gap-[66px]";
+document.querySelector("main").prepend(filterContainer);
+
 const recipesContainer = document.getElementById("recipes-container");
 const searchInput = document.getElementById("search-input");
 const clearSearchIcon = document.getElementById("clear-search");
@@ -6,6 +18,28 @@ let searchTerm = "";
 
 const applyFilters = () => {
   let filteredRecipes = recipesList;
+
+  if (selectedIngredients.length > 0) {
+    filteredRecipes = filteredRecipes.filter(recipe =>
+      selectedIngredients.every(selectedIngredient =>
+        recipe.ingredients.some(ing => ing.ingredient === selectedIngredient)
+      )
+    );
+  }
+
+  if (selectedAppliances.length > 0) {
+    filteredRecipes = filteredRecipes.filter(recipe =>
+      selectedAppliances.includes(recipe.appliance)
+    );
+  }
+
+  if (selectedUstensils.length > 0) {
+    filteredRecipes = filteredRecipes.filter(recipe =>
+      selectedUstensils.every(selectedUstensil =>
+        recipe.ustensils.includes(selectedUstensil)
+      )
+    );
+  }
 
   if (searchTerm.length > 0) {
     filteredRecipes = filteredRecipes.filter(recipe =>
@@ -94,5 +128,81 @@ fetch("data/recipes.json")
   .then((recipes) => {
     recipesList = recipes;
     displayRecipes(recipesList);
+    updateFilterOptions(recipesList);
+    generateFilterSelect("Ingrédients", "ingredient", selectedIngredients);
+    generateFilterSelect("Appareils", "appliance", selectedAppliances);
+    generateFilterSelect("Ustensiles", "ustensil", selectedUstensils);
   })
   .catch((error) => console.error("Erreur lors du chargement des recettes :", error));
+
+const updateFilterOptions = (recipes) => {
+  availableIngredients = [...new Set(recipes.flatMap(r => r.ingredients.map(i => i.ingredient)))];
+  availableAppliances = [...new Set(recipes.map(r => r.appliance))];
+  availableUstensils = [...new Set(recipes.flatMap(r => r.ustensils))];
+};
+
+const generateFilterSelect = (label, type, selectedArray) => {
+  let itemsList = [];
+  if (type === "ingredient") itemsList = availableIngredients;
+  if (type === "appliance") itemsList = availableAppliances;
+  if (type === "ustensil") itemsList = availableUstensils;
+
+  const filterSelect = document.createElement("div");
+  filterSelect.className = "relative bg-white rounded-[11px] p-4 w-[195px]";
+
+  const filterSelectHeader = document.createElement("div");
+  filterSelectHeader.className = "flex justify-between items-center cursor-pointer";
+  filterSelectHeader.textContent = label;
+
+  const arrowIcon = document.createElement("img");
+  arrowIcon.src = "assets/utils/icons/arrow-down.svg";
+  arrowIcon.className = "w-4 h-4 transition-transform duration-200 ease-in-out";
+  filterSelectHeader.appendChild(arrowIcon);
+
+  const itemListContainer = document.createElement("div");
+  itemListContainer.className = "hidden absolute left-0 w-full bg-white shadow-lg rounded-lg p-4 z-50";
+  itemListContainer.dataset.type = type;
+
+  const itemSearch = document.createElement("input");
+  itemSearch.className = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400";
+  itemSearch.placeholder = `Rechercher un ${label.toLowerCase()}...`;
+
+  const itemScrollContainer = document.createElement("div");
+  itemScrollContainer.className = "max-h-[315px] overflow-y-auto mt-2 scrollbar-hide";
+
+  itemsList.forEach(item => {
+    const itemOption = document.createElement("div");
+    itemOption.className = `item-option-${type} cursor-pointer py-1 px-2 hover:bg-[#FFD15B]`;
+    itemOption.textContent = item;
+    itemOption.addEventListener("click", () => toggleFilter(item, itemOption, selectedArray));
+    itemScrollContainer.appendChild(itemOption);
+  });
+
+  itemSearch.addEventListener("input", (e) => {
+    const value = e.target.value.toLowerCase();
+    document.querySelectorAll(`.item-option-${type}`).forEach(option => {
+      option.classList.toggle("hidden", !option.textContent.toLowerCase().includes(value));
+    });
+  });
+
+  filterSelectHeader.addEventListener("click", () => {
+    itemListContainer.classList.toggle("hidden");
+    arrowIcon.style.transform = itemListContainer.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)";
+  });
+
+  itemListContainer.append(itemSearch, itemScrollContainer);
+  filterSelect.append(filterSelectHeader, itemListContainer);
+  filterContainer.appendChild(filterSelect);
+};
+
+const toggleFilter = (item, element, selectedArray) => {
+  const index = selectedArray.indexOf(item);
+  if (index !== -1) {
+    selectedArray.splice(index, 1);
+    element.classList.remove("bg-gray-200");
+  } else {
+    selectedArray.push(item);
+    element.classList.add("bg-gray-200");
+  }
+  applyFilters();
+};
