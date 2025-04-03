@@ -11,6 +11,10 @@ filterContainer.className = "flex gap-[66px]";
 document.querySelector("main").prepend(filterContainer);
 
 const recipesContainer = document.getElementById("recipes-container");
+const tagContainer = document.createElement("div");
+tagContainer.className = "flex flex-wrap gap-2 mt-[22px]";
+document.querySelector("main").insertBefore(tagContainer, recipesContainer);
+
 const searchInput = document.getElementById("search-input");
 const clearSearchIcon = document.getElementById("clear-search");
 let recipesList = [];
@@ -132,6 +136,7 @@ fetch("data/recipes.json")
     generateFilterSelect("Ingrédients", "ingredient", selectedIngredients);
     generateFilterSelect("Appareils", "appliance", selectedAppliances);
     generateFilterSelect("Ustensiles", "ustensil", selectedUstensils);
+    renderTags();
   })
   .catch((error) => console.error("Erreur lors du chargement des recettes :", error));
 
@@ -205,4 +210,30 @@ const toggleFilter = (item, element, selectedArray) => {
     element.classList.add("bg-gray-200");
   }
   applyFilters();
+  renderTags();
+};
+
+const renderTags = () => {
+  tagContainer.innerHTML = "";
+
+  const createTag = (text, array) => {
+    const tag = document.createElement("div");
+    tag.className = "flex items-center bg-[#FFD15B] text-black px-4 py-2 rounded-[11px] font-[Manrope] text-sm";
+    const span = document.createElement("span");
+    span.textContent = text;
+    const close = document.createElement("span");
+    close.textContent = "×";
+    close.className = "ml-3 cursor-pointer text-xl font-bold";
+    close.addEventListener("click", () => {
+      array.splice(array.indexOf(text), 1);
+      applyFilters();
+      renderTags();
+    });
+    tag.append(span, close);
+    tagContainer.appendChild(tag);
+  };
+
+  selectedIngredients.forEach(i => createTag(i, selectedIngredients));
+  selectedAppliances.forEach(a => createTag(a, selectedAppliances));
+  selectedUstensils.forEach(u => createTag(u, selectedUstensils));
 };
