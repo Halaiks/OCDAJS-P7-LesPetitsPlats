@@ -39,7 +39,7 @@ fetch("data/recipes.json")
     generateFilterSelect("Ingrédients", "ingredient", selectedIngredients);
     generateFilterSelect("Appareils", "appliance", selectedAppliances);
     generateFilterSelect("Ustensiles", "ustensil", selectedUstensils);
-    filterContainer.appendChild(recipeCount); // Ajout ici au 1er chargement
+    filterContainer.appendChild(recipeCount); 
   })
   .catch(error => console.error("Erreur lors du chargement des recettes :", error));
 
@@ -50,8 +50,8 @@ const displayRecipes = (recipes) => {
     const recipeCard = createRecipeCard(recipe);
     recipesContainer.appendChild(recipeCard);
   });
-  recipeCount.textContent = `${recipes.length} recette${recipes.length > 1 ? "s" : ""}`;
-};
+  const count = recipes.length.toString().padStart(2, "0");
+  recipeCount.textContent = `${count} recette${recipes.length > 1 ? "s" : ""}`;};
 
 // Création d'une carte recette
 const createRecipeCard = (recipe) => {
@@ -127,7 +127,7 @@ const applyFilters = () => {
   generateFilterSelect("Ingrédients", "ingredient", selectedIngredients);
   generateFilterSelect("Appareils", "appliance", selectedAppliances);
   generateFilterSelect("Ustensiles", "ustensil", selectedUstensils);
-  filterContainer.appendChild(recipeCount); // Réinsertion après chaque filtre
+  filterContainer.appendChild(recipeCount); 
 };
 
 // Met à jour les options de filtres selon les recettes restantes
