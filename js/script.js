@@ -90,12 +90,17 @@ const createRecipeCard = (recipe) => {
 const applyFilters = () => {
   let filteredRecipes = recipesList;
 
-  if (searchTerm.length > 0) {
+  if (searchTerm.length >= 3) {
     filteredRecipes = filteredRecipes.filter(recipe =>
       recipe.name.toLowerCase().includes(searchTerm) ||
       recipe.description.toLowerCase().includes(searchTerm) ||
       recipe.ingredients.some(ing => ing.ingredient.toLowerCase().includes(searchTerm))
     );
+  } else if (searchTerm.length > 0) {
+    // Moins de 3 caractères saisis, on vide la liste
+    displayRecipes([]);
+    updateFilterOptions([]);
+    return;
   }
 
   if (selectedIngredients.length > 0) {
@@ -140,7 +145,9 @@ const updateFilterOptions = (recipes) => {
 // Recherche
 searchInput.addEventListener("input", (e) => {
   searchTerm = e.target.value.toLowerCase();
-  applyFilters();
+  if (searchTerm.length === 0 || searchTerm.length >= 3) {
+    applyFilters();
+  }
   renderTags();
   clearSearchIcon.classList.toggle("hidden", searchTerm.length === 0);
 });
