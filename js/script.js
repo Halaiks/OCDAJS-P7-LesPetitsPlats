@@ -16,6 +16,7 @@ let availableIngredients = [];
 let availableAppliances = [];
 let availableUstensils = [];
 
+const noResultMessageContainer = document.getElementById("no-result-message");
 const recipesContainer = document.getElementById("recipes-container");
 const searchInput = document.getElementById("search-input");
 const clearSearchIcon = document.getElementById("clear-search");
@@ -88,6 +89,8 @@ const createRecipeCard = (recipe) => {
 
 // Appliquer tous les filtres
 const applyFilters = () => {
+  noResultMessageContainer.innerHTML = "";
+recipesContainer.innerHTML = "";
   let filteredRecipes = recipesList;
 
   if (searchTerm.length >= 3) {
@@ -97,9 +100,9 @@ const applyFilters = () => {
       recipe.ingredients.some(ing => ing.ingredient.toLowerCase().includes(searchTerm))
     );
   } else if (searchTerm.length > 0) {
-    // Moins de 3 caractères saisis, on vide la liste
     displayRecipes([]);
     updateFilterOptions([]);
+        recipeCount.textContent = "00 recette";
     return;
   }
 
@@ -125,7 +128,22 @@ const applyFilters = () => {
     );
   }
 
-  displayRecipes(filteredRecipes);
+
+
+  // Message d'erreur si aucune recette ne correspond
+   if (filteredRecipes.length === 0 && searchTerm.length >= 3) {
+      recipeCount.textContent = "00 recette";
+    const noResultMessage = createElement(
+      "p",
+      "text-center font-bold text-[24px] text-gray-700 my-6", 
+      `Aucune recette ne contient « ${searchTerm} », vous pouvez chercher « tarte aux pommes », « poisson », etc.`
+    );
+    noResultMessageContainer.appendChild(noResultMessage); 
+    updateFilterOptions([]);
+    return;
+  }
+
+    displayRecipes(filteredRecipes);
   updateFilterOptions(filteredRecipes);
 
   filterContainer.innerHTML = "";
@@ -152,6 +170,7 @@ searchInput.addEventListener("input", (e) => {
   clearSearchIcon.classList.toggle("hidden", searchTerm.length === 0);
 });
 
+
 // Génère les filtres
 const generateFilterSelect = (label, type, selectedArray) => {
   let itemsList = [];
@@ -165,7 +184,7 @@ const generateFilterSelect = (label, type, selectedArray) => {
   arrowIcon.src = "assets/utils/icons/arrow-down.svg";
   filterSelectHeader.appendChild(arrowIcon);
 
-  const itemListContainer = createElement("div", `hidden absolute left-0 w-full bg-white shadow-lg rounded-lg p-4 z-50`);
+  const itemListContainer = createElement("div", "hidden absolute left-0 w-full bg-white shadow-lg rounded-lg p-4 z-50");
   itemListContainer.dataset.type = type;
 
   const itemSearch = createElement("input", "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400");
@@ -174,7 +193,7 @@ const generateFilterSelect = (label, type, selectedArray) => {
   const itemScrollContainer = createElement("div", "max-h-[315px] overflow-y-auto mt-2 scrollbar-hide");
 
   itemsList.forEach(item => {
-    const itemOption = createElement("div", `cursor-pointer py-1 px-2 hover:bg-[#FFD15B]`, item);
+    const itemOption = createElement("div", "cursor-pointer py-1 px-2 hover:bg-[#FFD15B]", item);
     itemOption.classList.add(`item-option-${type}`);
     itemOption.addEventListener("click", () => toggleFilter(item, itemOption, selectedArray));
     itemScrollContainer.appendChild(itemOption);
